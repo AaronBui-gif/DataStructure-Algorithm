@@ -1,5 +1,4 @@
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Random;
 
 /*
@@ -33,9 +32,33 @@ class Guess {
 				}
 			}
 		}
-		int rand = random.nextInt(possibleAnswer.size());
-		myGuess = possibleAnswer.get(rand);
-		possibleAnswer.remove(rand);
+		if (myGuess != 0) {
+			int rand = random.nextInt(possibleAnswer.size());
+			myGuess = possibleAnswer.get(rand);
+			possibleAnswer.remove(rand);
+		}
+		else {
+			String[] guess;
+			while (true){
+				myGuess = random.nextInt(9000)+1000;
+				guess = String.valueOf(myGuess).split("");
+				boolean isDifferent = true;
+				for (int i = 0; i < guess.length; i++){
+					for (int ii = 0; ii< guess.length;ii++){
+						if (ii != i && guess[i].equals(guess[ii])){
+							isDifferent = false;
+							break;
+						}
+					}
+					if (!isDifferent){
+						break;
+					}
+				}
+				if (isDifferent){
+					break;
+				}
+			}
+		}
 		/*
 		 * IMPLEMENT YOUR GUESS STRATEGY HERE
 		 */
@@ -44,7 +67,7 @@ class Guess {
 
 	private static void initialSetting(){
 		if (!isStart){
-			for (int i =0; i < 8999; i++){
+			for (int i =0; i < 9000; i++){
 				possibleAnswer.add(i+1000);
 			}
 			isStart = true;

@@ -50,7 +50,7 @@ public class GuessRunner {
 		 * to get a target number for your oponent
 		 * should be a random number between [1000-9999]
 		 */
-		int target = 1344;
+		int target = 8068;
 		Result res = new Result();
 		System.out.println("Guess\tResponse\n");
 		while(res.getStrikes() < 4) {
@@ -60,7 +60,7 @@ public class GuessRunner {
 			 */
 			int guess = Guess.make_guess(res.getHits(), res.getStrikes());
 			System.out.printf("%d\n", guess);
-			
+
 			if (guess == -1) {	// user quits
 				System.out.printf("you quit: %d\n", target);
 				return;
