@@ -1,7 +1,4 @@
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Random;
+import java.util.*;
 
 /*
  * You need to implement an algorithm to make guesses
@@ -10,10 +7,12 @@ import java.util.Random;
  * PLEASE DO NOT CHANGE THE NAME OF THE CLASS AND THE METHOD
  */
 class Guess {
-	private static HashSet<Integer> possibleAnswer = new HashSet<>();
+	private static HashSet<Integer> possibleAnswer;
+	private static HashSet<Integer> allAnswers;
+	private static HashMap<Integer, Integer> eliminationList;
 	private static Random random = new Random();
 	private static int myGuess = 0;
-	private static boolean isStart = false;
+	static boolean isStart = false;
 	static int make_guess(int hits, int strikes) {
 		initialSetting();			// Set up at the first time
 		if (myGuess != 0){			// Check if there is a guess is wrong
@@ -51,9 +50,29 @@ class Guess {
 			}
 		}
 		if (myGuess != 0) {													// If there is a previous guess
-			int rand = random.nextInt(possibleAnswer.size());
-			myGuess = getNumber(rand, possibleAnswer);
-			possibleAnswer.remove(myGuess);                                    // Remove after guessing
+			// Store the min elimination count of each answer
+			for (Integer integer : allAnswers) {
+				eliminationList.put(integer, getMinElimination(integer));
+			}
+			
+			// Get the max 
+			int maxElimination = eliminationList.get(Collections.max(eliminationList.entrySet(), Map.Entry.comparingByValue()).getKey());
+			
+			// Set the guess as the key that has the max value
+			myGuess = Collections.max(eliminationList.entrySet(), Comparator.comparingInt(Map.Entry::getValue)).getKey();
+			
+			// Check if there is an element in possible answers also has the same value with max
+			for (Integer integer : possibleAnswer) {
+				if (eliminationList.get(integer) == maxElimination) {	// If yes, Set the guess 
+					myGuess = integer;
+					break;
+				}
+			}
+			
+			// Remove all used answers
+			allAnswers.remove(myGuess);
+			possibleAnswer.remove(myGuess);
+			eliminationList.clear();
 		}
 		else {																// If there is now the first guess
 			String[] guess;
@@ -76,13 +95,63 @@ class Guess {
 					break;
 				}
 			}
+			allAnswers.remove(myGuess);
 			possibleAnswer.remove((myGuess));								// Remove after guessing
 		}
 		/*
 		 * IMPLEMENT YOUR GUESS STRATEGY HERE
 		 */
-		System.out.println(Arrays.toString(possibleAnswer.toArray()));
 		return myGuess;
+	}
+
+	/**
+	 * Get min number of answers will be eliminated if it meet all cases 
+	 * @param myGuess int
+	 * @return int
+	 */
+	private static int getMinElimination(int myGuess){
+		int[] s = {0,0,0,0,0,1,1,1,1,2,2,2,3,3,4};
+		int[] h = {0,1,2,3,4,0,1,2,3,0,1,2,0,1,0};
+		int eliminatedNumber = 0;
+		int min = 10000;
+		for (int i = 0; i< s.length; i++){
+			for (Integer index : possibleAnswer){
+				if (!isPossible(s[i], h[i], myGuess, index)) {
+					eliminatedNumber++;
+				}
+			}
+			if (eliminatedNumber < min){
+				min = eliminatedNumber;
+			}
+			eliminatedNumber= 0;
+		}
+		return min;
+	}
+
+	/**
+	 * Check if this guess is match with the answer in the case (hits and strikes)
+	 * @param strikes int
+	 * @param hits int
+	 * @param target int
+	 * @param guess int
+	 * @return boolean
+	 */
+	private static boolean isPossible(int strikes,int hits,int target,int guess) {
+		int strike = 0, hit = 0;
+		int[] numbers = new int[10];
+		for(int i = 0; i < 4; i++) {
+			int targetDigit = (int) (target / Math.pow(10, i) % 10); //Get prob answer digit
+			int guessDigit = (int) (guess / Math.pow(10, i) % 10); //Get guess digit
+			if (targetDigit == guessDigit) {
+				strike++;
+			} else {
+				if (numbers[targetDigit] < 0) hit++;
+				if (numbers[guessDigit] > 0) hit++;
+				numbers[targetDigit]++;
+				numbers[guessDigit]--;
+			}
+		}
+		return (strike == strikes) && (hit == hits);
 	}
 
 	/**
@@ -107,8 +176,13 @@ class Guess {
 	 */
 	private static void initialSetting(){
 		if (!isStart){
+			myGuess = 0;
+			eliminationList = new HashMap<>();
+			allAnswers = new HashSet<>();
+			possibleAnswer = new HashSet<>();
 			for (int i =0; i < 9000; i++){
 				possibleAnswer.add(i+1000);
+				allAnswers.add(i+1000);
 			}
 			isStart = true;
 		}
