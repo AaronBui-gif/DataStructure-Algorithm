@@ -1,26 +1,26 @@
 public class GuessRunner {
 
 	static Result processGuess(int target, int guess) {
-		String[] des = Integer.toString(target).split("");
-		String[] src = Integer.toString(guess).split("");
+		char des[] = Integer.toString(target).toCharArray();
+		char src[] = Integer.toString(guess).toCharArray();
 		int hits=0;
 		int strikes=0;
-
+		
 		// process strikes
 		for (int i=0; i<4; i++) {
-			if (src[i].equals(des[i])) {
+			if (src[i] == des[i]) {
 				strikes++;
-				des[i] = "x";
-				src[i] = "x";
+				des[i] = 'a';
+				src[i] = 'a';
 			}
 		}
 		// process hits
 		for (int i=0; i<4; i++) {
 			for (int j=0; j<4; j++) {
-				if (!src[i].equals("x")) {
-					if (src[i].equals(des[j])) {
-						des[j] = "x";
+				if (src[i]!='a') {
+					if (src[i]==des[j]) {
 						hits++;
+						des[j] = 'a';
 						break;
 					}
 				}
@@ -44,13 +44,12 @@ public class GuessRunner {
 	}
 
 	public static void main(String[] args) {
-		new Guess();
 		int guess_cnt = 0;
 		/* A dummy value, you need to code here
 		 * to get a target number for your oponent
 		 * should be a random number between [1000-9999]
 		 */
-		int target = 8068;
+		int target = 1234;
 		Result res = new Result();
 		System.out.println("Guess\tResponse\n");
 		while(res.getStrikes() < 4) {
@@ -60,7 +59,7 @@ public class GuessRunner {
 			 */
 			int guess = Guess.make_guess(res.getHits(), res.getStrikes());
 			System.out.printf("%d\n", guess);
-
+			
 			if (guess == -1) {	// user quits
 				System.out.printf("you quit: %d\n", target);
 				return;
