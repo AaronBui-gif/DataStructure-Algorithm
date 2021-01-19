@@ -1,3 +1,5 @@
+import java.util.Random;
+
 public class GuessRunner {
 
 	static Result processGuess(int target, int guess) {
@@ -45,18 +47,12 @@ public class GuessRunner {
 
 	public static void main(String[] args) {
 		int guess_cnt = 0;
-		/* A dummy value, you need to code here
-		 * to get a target number for your oponent
-		 * should be a random number between [1000-9999]
-		 */
-		int target = 1234;
+		// Create guess number for opponent
+		int[] a = {8287,3989,7996,9976,2092,8081,8595,7734,7765,3364,3020,2144,2155,2554,3996,3883,9194,9006};
+		int target = a[new Random().nextInt(a.length)];
 		Result res = new Result();
 		System.out.println("Guess\tResponse\n");
 		while(res.getStrikes() < 4) {
-			/* take a guess from user provided class
-			 * the user provided class must be a Guess.class file
-			 * that has implemented a static function called make_guess()
-			 */
 			int guess = Guess.make_guess(res.getHits(), res.getStrikes());
 			System.out.printf("%d\n", guess);
 			
@@ -65,10 +61,6 @@ public class GuessRunner {
 				return;
 			}
 			guess_cnt++;
-			
-			/* You need to code this method to process a guess
-			 * provided by your oponent
-			 */
 			res = processGuess(target, guess);
 		}
 		System.out.printf("Target: %d - Number of guesses: %d\n", target, guess_cnt);
