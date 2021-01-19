@@ -1,11 +1,5 @@
 import java.util.*;
 
-/*
- * You need to implement an algorithm to make guesses
- * for a 4-digits number in the method make_guess below
- * that means the guess must be a number between [1000-9999]
- * PLEASE DO NOT CHANGE THE NAME OF THE CLASS AND THE METHOD
- */
 class Guess {
 	private static HashSet<Integer> possibleAnswer;
 	private static HashSet<Integer> allAnswers;
@@ -83,13 +77,19 @@ class Guess {
 				max.add(integer);
 			}
 		}
-		if (max.size() > 0) {										// If the list contains more than 0 element
-			myGuess = max.get(random.nextInt(max.size()));			// Guess will be the random number in list
-			if (max.size() > 1){									// If there are more than 1 element in list
-				setGuessFromMaxList();								// Set guess as the most relevant possible number
+
+		// If there is no element in possible answers list has the max value
+		if (max.size() == 0){
+			for (Integer integer: eliminationList.keySet()){				// Store all the max value from elimination list
+				if (eliminationList.get(integer) == maxElimination){
+					max.add(integer);
+				}
 			}
 		}
-
+		else myGuess = max.get(random.nextInt(max.size()));			// Guess will be the random number in list
+		if (max.size() > 1){									// If there are more than 1 element in list
+			setGuessFromMaxList();								// Set guess as the most relevant possible number
+		}
 	}
 
 	/**
@@ -101,7 +101,7 @@ class Guess {
 			int counter = 0;
 			for (Integer answer : possibleAnswer) {				// Compare with each possible answer
 				int[] strikesAndHits = getStrikesAndHits(answer, chosenValue);				// Get strikes and hits
-				if ((strikesAndHits[0] == 2 && strikesAndHits[1] > 0) || strikesAndHits[0] == 3){
+				if ((strikesAndHits[0] == 2 && strikesAndHits[1] > 0) || strikesAndHits[0] >= 3){
 					counter++;
 				}
 			}
